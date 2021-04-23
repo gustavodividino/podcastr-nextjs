@@ -69,6 +69,9 @@ export default function Episode( { episode }:EpisodeProps){
   )
 }
 
+/*
+  Obrigatorio para todas as rotas que tem geração estática e parametros dinamicos
+*/
 export const getStaticPaths: GetStaticPaths = async() => {
   return {
     paths: [],
