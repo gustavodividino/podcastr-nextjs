@@ -1,37 +1,37 @@
-import { format, parseISO } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
-import Image from 'next/image'
-import Head from 'next/head'
-import Link from 'next/link';
-import { GetStaticProps, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
-import { api } from '../../services/api';
-import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
+import { format, parseISO } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
+import Image from "next/image";
+import Head from "next/head";
+import Link from "next/link";
+import { GetStaticProps, GetStaticPaths } from "next";
+import { useRouter } from "next/router";
+import { api } from "../../services/api";
+import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
 
-import styles from './episode.module.scss';
-import { usePlayer } from '../../context/PlayerContext';
+import styles from "./episode.module.scss";
+import { usePlayer } from "../../context/PlayerContext";
 
 /**
-* Tipagem dos Episode
-*/
+ * Tipagem dos Episode
+ */
 type Episode = {
-  id: string,
-  title: string,
-  thumbnail: string,
-  members: string,
-  publishedAt: string,
-  duration: number,
-  durationAsString: string,
-  description: string,
-  url: string,
-}
+  id: string;
+  title: string;
+  thumbnail: string;
+  members: string;
+  publishedAt: string;
+  duration: number;
+  durationAsString: string;
+  description: string;
+  url: string;
+};
 
 /**
-* Tipagem da props do Episode
-*/
+ * Tipagem da props do Episode
+ */
 type EpisodeProps = {
   episode: Episode;
-}
+};
 
 export default function Episode({ episode }: EpisodeProps) {
   const { play } = usePlayer();
@@ -40,13 +40,12 @@ export default function Episode({ episode }: EpisodeProps) {
 
   return (
     <div className={styles.episode}>
-
       <Head>
         <title>{episode.title} | Podcastr </title>
       </Head>
 
       <div className={styles.thumbnailContainer}>
-        <Link href="/" >
+        <Link href="/">
           <button type="button">
             <img src="/arrow-left.svg" alt="Voltar"></img>
           </button>
@@ -73,9 +72,8 @@ export default function Episode({ episode }: EpisodeProps) {
         className={styles.description}
         dangerouslySetInnerHTML={{ __html: episode.description }} //Força a execucao do codigo HTML
       />
-
     </div>
-  )
+  );
 }
 
 /*
@@ -84,31 +82,33 @@ export default function Episode({ episode }: EpisodeProps) {
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [],
-    fallback: 'blocking',
-  }
-}
+    fallback: "blocking",
+  };
+};
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
 
-  const { data } = await api.get(`/episodes/${slug}`)
+  const { data } = await api.get(`/episodes/${slug}`);
 
   const episode = {
     id: data.id,
     title: data.title,
     thumbnail: data.thumbnail,
     members: data.members,
-    publishedAt: format(parseISO(data.published_at), 'd MMM yy', { locale: ptBR }),
+    publishedAt: format(parseISO(data.published_at), "d MMM yy", {
+      locale: ptBR,
+    }),
     duration: Number(data.file.duration),
     durationAsString: convertDurationToTimeString(Number(data.file.duration)),
     description: data.description,
     url: data.file.url,
-  }
+  };
 
   return {
     props: {
       episode,
     },
     revalidate: 60 * 60 * 24, // 24 horas
-  }
-}
+  };
+};
